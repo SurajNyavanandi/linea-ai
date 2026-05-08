@@ -1,7 +1,7 @@
-export const initialMessages = [
+export const initialConversations = [
   {
     id: 1,
-    role: "assistant",
-    content: "Hello! How can I help you today?",
+    title: "New Chat",
+    messages: [],
   },
 ];

@@ -3,10 +3,13 @@ import EmptyState from "./EmptyState";
 import ChatInput from "./ChatInput";
 import MessageBubble from "./MessageBubble";
 import TypingLoader from "./TypingLoader";
-import { initialMessages } from "../data/chats";
+import { generateResponse } from "../services/openai";
 
-function ChatWindow() {
-  const [messages, setMessages] = useState(initialMessages);
+function ChatWindow({
+  conversations,
+  setConversations,
+  activeConversation,
+}) {
   const [loading, setLoading] = useState(false);
 
   const messagesEndRef = useRef(null);
@@ -15,9 +18,9 @@ function ChatWindow() {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
-  }, [messages, loading]);
+  }, [activeConversation, loading]);
 
-  const handleSendMessage = (text) => {
+  const handleSendMessage = async (text) => {
     if (!text.trim()) return;
 
     const userMessage = {
@@ -26,37 +29,75 @@ function ChatWindow() {
       content: text,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [
+      ...activeConversation.messages,
+      userMessage,
+    ];
+
+    setConversations((prev) =>
+      prev.map((chat) =>
+        chat.id === activeConversation.id
+          ? {
+              ...chat,
+              title:
+                chat.messages.length === 0
+                  ? text.slice(0, 30)
+                  : chat.title,
+              messages: updatedMessages,
+            }
+          : chat
+      )
+    );
 
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const aiResponse = await generateResponse(
+        updatedMessages
+      );
+
       const aiMessage = {
         id: Date.now() + 1,
         role: "assistant",
-        content:
-          "This is a mock AI response. OpenAI integration comes in Phase 3.",
+        content: aiResponse,
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
-
+      setConversations((prev) =>
+        prev.map((chat) =>
+          chat.id === activeConversation.id
+            ? {
+                ...chat,
+                messages: [
+                  ...updatedMessages,
+                  aiMessage,
+                ],
+              }
+            : chat
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
     <main className="flex-1 flex flex-col">
       <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-4xl mx-auto flex flex-col gap-6">
-          {messages.length === 0 ? (
+        <div className="max-w-4xl mx-auto flex flex-col gap-6 min-h-full">
+          {activeConversation.messages.length ===
+          0 ? (
             <EmptyState />
           ) : (
-            messages.map((message) => (
-              <MessageBubble
-                key={message.id}
-                message={message}
-              />
-            ))
+            activeConversation.messages.map(
+              (message) => (
+                <MessageBubble
+                  key={message.id}
+                  message={message}
+                />
+              )
+            )
           )}
 
           {loading && <TypingLoader />}
@@ -65,7 +106,10 @@ function ChatWindow() {
         </div>
       </div>
 
-      <ChatInput onSend={handleSendMessage} />
+      <ChatInput
+        onSend={handleSendMessage}
+        loading={loading}
+      />
     </main>
   );
 }

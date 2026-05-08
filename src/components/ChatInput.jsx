@@ -1,13 +1,13 @@
 import { useRef, useState } from "react";
 import { SendHorizonal } from "lucide-react";
 
-function ChatInput({ onSend }) {
+function ChatInput({ onSend, loading }) {
   const [input, setInput] = useState("");
 
   const textareaRef = useRef(null);
 
   const handleSubmit = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
     onSend(input);
 
@@ -17,7 +17,10 @@ function ChatInput({ onSend }) {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey
+    ) {
       e.preventDefault();
       handleSubmit();
     }
@@ -41,12 +44,14 @@ function ChatInput({ onSend }) {
           onKeyDown={handleKeyDown}
           rows={1}
           placeholder="Message Linea AI..."
-          className="flex-1 bg-transparent resize-none outline-none text-sm placeholder:text-gray-500 max-h-40"
+          disabled={loading}
+          className="flex-1 bg-transparent resize-none outline-none text-sm placeholder:text-gray-500 max-h-40 disabled:opacity-60"
         />
 
         <button
           onClick={handleSubmit}
-          className="ml-3 bg-white text-black p-2 rounded-lg hover:bg-gray-200 transition"
+          disabled={loading}
+          className="ml-3 bg-white text-black p-2 rounded-lg hover:bg-gray-200 transition disabled:opacity-50"
         >
           <SendHorizonal size={18} />
         </button>
