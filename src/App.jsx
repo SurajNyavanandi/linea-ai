@@ -1,12 +1,7 @@
-import React from 'react'
+import MainLayout from "./layout/MainLayout";
+
 function App() {
-  return (
-    <div className="bg-[#0f0f0f] text-white min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        Linea AI
-      </h1>
-    </div>
-  )
+  return <MainLayout />;
 }
 
-export default App
+export default App;
