@@ -7,7 +7,7 @@ function Sidebar({
   onSelectChat,
 }) {
   return (
-    <aside className="hidden md:flex w-[260px] bg-[#171717] border-r border-white/10 flex-col p-4">
+    <aside className="w-[260px] bg-[#171717] border-r border-white/10 flex flex-col p-4 h-screen">
       <button
         onClick={onNewChat}
         className="flex items-center gap-2 bg-white text-black px-4 py-3 rounded-xl font-medium hover:bg-gray-200 transition"
