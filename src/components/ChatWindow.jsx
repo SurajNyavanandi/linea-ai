@@ -12,13 +12,15 @@ function ChatWindow({
 }) {
   const [loading, setLoading] = useState(false);
 
-  const messagesEndRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [activeConversation, loading]);
+    setTimeout(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+    }, 0);
+  }, [activeConversation.messages, loading]);
 
   const handleSendMessage = async (text, lines) => {
     if (!text.trim()) return;
@@ -84,9 +86,9 @@ function ChatWindow({
   };
 
   return (
-    <main className="flex-1 flex flex-col">
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="max-w-4xl mx-auto flex flex-col gap-6 min-h-full">
+    <main className="flex-1 flex flex-col h-full overflow-hidden">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-scroll px-4 py-6">
+        <div className="max-w-4xl mx-auto flex flex-col gap-6">
           {activeConversation.messages.length ===
           0 ? (
             <EmptyState />
@@ -102,8 +104,6 @@ function ChatWindow({
           )}
 
           {loading && <TypingLoader />}
-
-          <div ref={messagesEndRef} />
         </div>
       </div>
 
