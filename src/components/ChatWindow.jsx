@@ -20,7 +20,7 @@ function ChatWindow({
     });
   }, [activeConversation, loading]);
 
-  const handleSendMessage = async (text) => {
+  const handleSendMessage = async (text, lines) => {
     if (!text.trim()) return;
 
     const userMessage = {
@@ -53,7 +53,8 @@ function ChatWindow({
 
     try {
       const aiResponse = await generateResponse(
-        updatedMessages
+        updatedMessages,
+        lines
       );
 
       const aiMessage = {
