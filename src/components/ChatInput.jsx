@@ -3,14 +3,13 @@ import { SendHorizonal, ChevronDown } from "lucide-react";
 
 function ChatInput({ onSend, loading }) {
   const [input, setInput] = useState("");
-  const [lines, setLines] = useState("manual");
+  const [lines, setLines] = useState("1");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const textareaRef = useRef(null);
   const dropdownRef = useRef(null);
 
   const lineOptions = [
-    { value: "manual", label: "Manual Reply" },
     { value: "1", label: "1 line" },
     { value: "3", label: "3 lines" },
     { value: "5", label: "5 lines" },
